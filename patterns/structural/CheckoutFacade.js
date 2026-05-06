@@ -1,6 +1,7 @@
 import { InventoryService } from '../../services/InventoryService.js';
 import { PaymentService } from '../../services/PaymentService.js';
 import { ShippingService } from '../../services/ShippingService.js';
+import { CartService } from '../creational/CartService.js';
 
 class CheckoutFacade {
     constructor() {
@@ -17,6 +18,16 @@ class CheckoutFacade {
         // 2. If they are, process the payment using `paymentService.processPayment()`.
         // 3. If payment is successful, arrange shipping using `shippingService.arrangeShipping()`.
         // 4. Log the result of each step. If a step fails, log it and stop.
+        const cart = new CartService();
+        let finalPrice = 0;
+        orderDetails.productIds.forEach(id => {
+            finalPrice += cart.getProductPrice(id);
+        });
+        if (!this.inventoryService.checkStock(orderDetails.productIds))
+            return false;
+        if (!this.paymentService.processPayment(orderDetails.userId, finalPrice))
+            return false;
+        console.log(this.shippingService.arrangeShipping(orderDetails.userId,orderDetails.shippingInfo));
     }
 }
 

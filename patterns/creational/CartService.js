@@ -5,11 +5,15 @@
 // 4. If it does not exist, initialize the class properties (like `this.products`)
 //    and assign the new instance to `instance`.
 // 5. Export the class.
+let instance = null;
 
 class CartService {
     constructor() {
         // ... your implementation here ...
+        if (instance)
+            return instance;
         this.products = [];
+        instance = this;
     }
 
     addProduct(product) {
@@ -18,6 +22,13 @@ class CartService {
 
     removeProduct(productId) {
         this.products = this.products.filter(p => p.id !== productId);
+    }
+
+    getProductPrice(productId) {
+        const filteredProducts = this.products.filter(p => p.id === productId);
+        if (filteredProducts.length < 1)
+            return 0;
+        return filteredProducts[0].price || 0;
     }
 
     getProducts() {
